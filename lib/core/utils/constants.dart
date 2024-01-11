@@ -7,3 +7,16 @@ class Constants {
       'https://s3.coinmarketcap.com/generated/sparklines/web';
   static const userUrl = 'https://tenoos.ir/api';
 }
+
+enum ShapesType {
+  circle,
+  rectangle,
+  square,
+  diamond,
+  triangle,
+}
+
+enum CategoriesType {
+  math,
+  writing,
+}

@@ -7,7 +7,7 @@ class StorageOperator {
     flutterSecureStorage = locator<FlutterSecureStorage>();
   }
 
-  push(String key, String value) async {
+  push(String key, dynamic value) async {
     await flutterSecureStorage.write(
       key: key,
       value: value,
@@ -20,7 +20,7 @@ class StorageOperator {
     );
   }
 
-  Future<String> pull(String key) async {
+  Future<dynamic> pull(String key) async {
     final status = await flutterSecureStorage.read(
       key: key,
       aOptions: const AndroidOptions(

@@ -4,38 +4,46 @@ import 'package:mashgh/core/utils/value_manager.dart';
 
 class MyThemes {
   static final lightTheme = ThemeData(
+    useMaterial3: false,
     textTheme: TextTheme(
       displaySmall: TextStyle(
+        fontFamily: "Vazir",
         fontWeight: FontWeight.bold,
         fontSize: AppSize.s14,
         color: ColorManager.darkWhite3,
       ),
       headlineSmall: TextStyle(
+        fontFamily: "Vazir",
         fontWeight: FontWeight.w100,
         fontSize: AppSize.s8,
         color: ColorManager.darkRed,
       ),
       labelSmall: TextStyle(
+        fontFamily: "Vazir",
         fontWeight: FontWeight.bold,
         fontSize: AppSize.s14,
         color: ColorManager.redAccent,
       ),
       titleSmall: TextStyle(
+        fontFamily: "Vazir",
         fontWeight: FontWeight.w500,
         fontSize: AppSize.s14,
         color: ColorManager.darkGrey,
       ),
       bodySmall: TextStyle(
+        fontFamily: "Vazir",
         color: ColorManager.lightBlack1,
         fontWeight: FontWeight.bold,
         fontSize: AppSize.s14,
       ),
       bodyMedium: TextStyle(
+        fontFamily: "Vazir",
         color: ColorManager.lightBlack1,
         fontWeight: FontWeight.bold,
         fontSize: AppSize.s20,
       ),
       bodyLarge: TextStyle(
+        fontFamily: "Vazir",
         color: ColorManager.lightBlack1,
         fontWeight: FontWeight.bold,
         fontSize: AppSize.s24,
