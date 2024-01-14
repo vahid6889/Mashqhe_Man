@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mashgh/features/feature_image_worksheet/presentation/screens/test_editor.dart';
 
 class ImageWorksheetPage extends StatelessWidget {
   static const routeName = "/photo_worksheet";
@@ -8,6 +7,6 @@ class ImageWorksheetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TestEditor();
+    return Container();
   }
 }

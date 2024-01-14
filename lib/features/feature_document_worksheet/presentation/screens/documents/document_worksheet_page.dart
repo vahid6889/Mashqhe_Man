@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:mashgh/core/blocs/cubits/toolbar_component_cubit.dart';
 import 'package:mashgh/core/components/toolbar_component.dart';
 import 'package:mashgh/core/components/toolbox_app_bar.dart';
@@ -34,6 +35,10 @@ class DocumentWorksheetPage extends StatefulWidget {
 class _BottomToolBoxState extends State<DocumentWorksheetPage> {
   TextEditingController _textWorksheetController = TextEditingController();
   final ScrollController _scrollControllerScreen = ScrollController();
+  final QuillController _quillController = QuillController(
+    document: Document(),
+    selection: const TextSelection.collapsed(offset: 0),
+  );
   ScrollController? _scrollControllerToolbar;
   FocusNode textFieldFocusNode = FocusNode();
   // Map<String, Offset> positionsCircle = {};
@@ -147,6 +152,17 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
     final width = MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
 
+    /// set rtl direction in document
+    _quillController.document.format(
+      _quillController.document.length - 1,
+      0,
+      const Attribute(
+        'direction',
+        AttributeScope.block,
+        'rtl',
+      ),
+    );
+
     /// get argument from navigator pages
     final Map<String, dynamic>? _args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
@@ -175,9 +191,9 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
           child: const Icon(Icons.arrow_back),
         ),
       ),
-      // appBar: ToolboxAppBar(
-      //   controller: _controller,
-      // ),
+      appBar: ToolboxAppBar(
+        quillController: _quillController,
+      ),
       body: GestureDetector(
         // onScaleUpdate: (details) => updateScale(details.scale),
         onScaleEnd: (_) => commitScale(),
@@ -188,224 +204,218 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
               controller: _scrollControllerScreen,
               child: Stack(
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(right: 8.0, left: 8.0, top: 35.0),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          BlocBuilder<WorkspaceWorksheetBloc, WorksheetState>(
-                            buildWhen: (previous, current) {
-                              if (current.getWorksheetByIdStatus ==
-                                  previous.getWorksheetByIdStatus) {
-                                return false;
-                              }
-                              return true;
-                            },
-                            builder: (context, state) {
-                              if (state.getWorksheetByIdStatus
-                                  is GetWorksheetByIdCompleted) {
-                                /// cast data
-                                final GetWorksheetByIdCompleted
-                                    _getWorksheetByIdCompleted =
-                                    state.getWorksheetByIdStatus
-                                        as GetWorksheetByIdCompleted;
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BlocBuilder<WorkspaceWorksheetBloc, WorksheetState>(
+                          buildWhen: (previous, current) {
+                            if (current.getWorksheetByIdStatus ==
+                                previous.getWorksheetByIdStatus) {
+                              return false;
+                            }
+                            return true;
+                          },
+                          builder: (context, state) {
+                            if (state.getWorksheetByIdStatus
+                                is GetWorksheetByIdCompleted) {
+                              /// cast data
+                              final GetWorksheetByIdCompleted
+                                  _getWorksheetByIdCompleted =
+                                  state.getWorksheetByIdStatus
+                                      as GetWorksheetByIdCompleted;
 
-                                final WorksheetEntity? _worksheeTempEntity =
-                                    _getWorksheetByIdCompleted.worksheetEntity;
+                              final WorksheetEntity? _worksheeTempEntity =
+                                  _getWorksheetByIdCompleted.worksheetEntity;
 
-                                _textWorksheetController.text =
-                                    utf8.decode(_worksheeTempEntity!.content!);
+                              _textWorksheetController.text =
+                                  utf8.decode(_worksheeTempEntity!.content!);
 
-                                return TextField(
-                                  focusNode: textFieldFocusNode,
-                                  controller: _textWorksheetController,
-                                  textDirection: getDirection(
-                                      _textWorksheetController.text),
-                                  textAlign: intl.Bidi.detectRtlDirectionality(
-                                          _textWorksheetController.text)
-                                      ? TextAlign.right
-                                      : TextAlign.left,
-                                  textInputAction: TextInputAction.newline,
-                                  onChanged: (text) {
-                                    if (text.contains('\n') &&
-                                        text.codeUnits.isNotEmpty &&
-                                        text.codeUnits.last == 10) {
-                                      numLines = '\n'.allMatches(text).length;
+                              return TextField(
+                                focusNode: textFieldFocusNode,
+                                controller: _textWorksheetController,
+                                textDirection:
+                                    getDirection(_textWorksheetController.text),
+                                textAlign: intl.Bidi.detectRtlDirectionality(
+                                        _textWorksheetController.text)
+                                    ? TextAlign.right
+                                    : TextAlign.left,
+                                textInputAction: TextInputAction.newline,
+                                onChanged: (text) {
+                                  if (text.contains('\n') &&
+                                      text.codeUnits.isNotEmpty &&
+                                      text.codeUnits.last == 10) {
+                                    numLines = '\n'.allMatches(text).length;
 
-                                      if (numLines > 14) {
-                                        textFieldFocusNode.unfocus();
-                                        // text.trim();
-                                      }
+                                    if (numLines > 14) {
+                                      textFieldFocusNode.unfocus();
+                                      // text.trim();
                                     }
-                                  },
-                                  style: const TextStyle(
-                                    wordSpacing: 20,
-                                    height: 4,
-                                    fontSize: 20,
+                                  }
+                                },
+                                style: const TextStyle(
+                                  wordSpacing: 20,
+                                  height: 4,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  hintText: intl.Bidi.detectRtlDirectionality(
+                                          _textWorksheetController.text)
+                                      ? "شروع ..."
+                                      : " Start ...",
+                                  hintStyle: const TextStyle(
+                                    fontSize: 20.0,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    hintText: intl.Bidi.detectRtlDirectionality(
-                                            _textWorksheetController.text)
-                                        ? "شروع ..."
-                                        : " Start ...",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    hintTextDirection: getDirection(
-                                        _textWorksheetController.text),
+                                  hintTextDirection: getDirection(
+                                      _textWorksheetController.text),
+                                ),
+                                scrollPadding: const EdgeInsets.all(20.0),
+                                keyboardType: TextInputType.multiline,
+                                maxLines: maxLinesInTextField,
+                                cursorHeight: 120,
+                                maxLength: maxLengthInTextField,
+                                maxLengthEnforcement:
+                                    MaxLengthEnforcement.enforced,
+                                // cursorWidth: 5,
+                              );
+                            }
+
+                            // return TextField(
+                            //   focusNode: textFieldFocusNode,
+                            //   controller: _textWorksheetController,
+                            //   textDirection:
+                            //       getDirection(_textWorksheetController.text),
+                            //   textAlign: intl.Bidi.detectRtlDirectionality(
+                            //           _textWorksheetController.text)
+                            //       ? TextAlign.right
+                            //       : TextAlign.left,
+                            //   textInputAction: TextInputAction.newline,
+                            //   onChanged: (text) {
+                            //     setState(() {});
+                            //     if (text.contains('\n') &&
+                            //         text.codeUnits.isNotEmpty &&
+                            //         text.codeUnits.last == 10) {
+                            //       numLines = '\n'.allMatches(text).length;
+
+                            //       if (numLines > 14) {
+                            //         textFieldFocusNode.unfocus();
+                            //         // text.trim();
+                            //       }
+                            //     }
+
+                            //     // numLines = '\n'.allMatches(text).length + 1;
+
+                            //     // if (numLines > 14 &&
+                            //     //     text.codeUnits.isNotEmpty &&
+                            //     //     text.codeUnits.last == 10) {
+                            //     //   setState(() {});
+
+                            //     //   textFieldFocusNode.unfocus();
+                            //     // }
+
+                            //     //   if (text.contains('\n')) {
+                            //     //     numLines = '\n'.allMatches(text).length + 1;
+                            //     //     // if(numLines > 15) {
+                            //     //     //   textWorksheetController
+                            //     //     // }
+                            //     //     // print(text);
+                            //     //     // enterCounter++;
+
+                            //     //     // if (enterCounter > 15) {
+                            //     //     //   textWorksheetController.text = textWorksheetController
+                            //     //     //       .text
+                            //     //     //       .replaceAll('\n', '');
+                            //     //     //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     //     //     const SnackBar(
+                            //     //     //       content: Text("Reached max lines"),
+                            //     //     //     ),
+                            //     //     //   );
+                            //     //     //   MaxLengthEnforcement.enforced;
+                            //     //     // }
+                            //     //   }
+                            //   },
+                            //   style: const TextStyle(
+                            //     // wordSpacing: 50,
+                            //     height: 4,
+                            //     fontSize: 20,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            //   decoration: InputDecoration(
+                            //     contentPadding: const EdgeInsets.symmetric(
+                            //       horizontal: 5.0,
+                            //     ),
+                            //     hintText: intl.Bidi.detectRtlDirectionality(
+                            //             _textWorksheetController.text)
+                            //         ? "شروع ..."
+                            //         : " Start ...",
+                            //     hintStyle: const TextStyle(
+                            //       fontSize: 20.0,
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //     hintTextDirection: getDirection(
+                            //         _textWorksheetController.text),
+                            //   ),
+                            //   scrollPadding: const EdgeInsets.all(20.0),
+                            //   keyboardType: TextInputType.multiline,
+                            //   maxLines: maxLinesInTextField,
+                            //   cursorHeight: 120,
+                            //   maxLength: maxLengthInTextField,
+                            //   maxLengthEnforcement:
+                            //       MaxLengthEnforcement.enforced,
+                            //   // cursorWidth: 5,
+                            // );
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                top: 8.0,
+                                right: 8.0,
+                                left: 8.0,
+                              ),
+                              child: QuillEditor.basic(
+                                configurations: QuillEditorConfigurations(
+                                  scrollable: true,
+                                  // scrollBottomInset: 1.0,
+                                  scrollPhysics: const BouncingScrollPhysics(),
+                                  maxHeight: height * 1.5,
+                                  minHeight: height * 1.5,
+                                  showCursor: true,
+                                  dialogTheme: const QuillDialogTheme(
+                                    inputTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    dialogBackgroundColor: Colors.white,
+                                    buttonTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    labelTextStyle:
+                                        TextStyle(color: Colors.white),
                                   ),
-                                  scrollPadding: const EdgeInsets.all(20.0),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: maxLinesInTextField,
-                                  cursorHeight: 120,
-                                  maxLength: maxLengthInTextField,
-                                  maxLengthEnforcement:
-                                      MaxLengthEnforcement.enforced,
-                                  // cursorWidth: 5,
-                                );
-                              }
-
-                              // return TextField(
-                              //   focusNode: textFieldFocusNode,
-                              //   controller: _textWorksheetController,
-                              //   textDirection:
-                              //       getDirection(_textWorksheetController.text),
-                              //   textAlign: intl.Bidi.detectRtlDirectionality(
-                              //           _textWorksheetController.text)
-                              //       ? TextAlign.right
-                              //       : TextAlign.left,
-                              //   textInputAction: TextInputAction.newline,
-                              //   onChanged: (text) {
-                              //     setState(() {});
-                              //     if (text.contains('\n') &&
-                              //         text.codeUnits.isNotEmpty &&
-                              //         text.codeUnits.last == 10) {
-                              //       numLines = '\n'.allMatches(text).length;
-
-                              //       if (numLines > 14) {
-                              //         textFieldFocusNode.unfocus();
-                              //         // text.trim();
-                              //       }
-                              //     }
-
-                              //     // numLines = '\n'.allMatches(text).length + 1;
-
-                              //     // if (numLines > 14 &&
-                              //     //     text.codeUnits.isNotEmpty &&
-                              //     //     text.codeUnits.last == 10) {
-                              //     //   setState(() {});
-
-                              //     //   textFieldFocusNode.unfocus();
-                              //     // }
-
-                              //     //   if (text.contains('\n')) {
-                              //     //     numLines = '\n'.allMatches(text).length + 1;
-                              //     //     // if(numLines > 15) {
-                              //     //     //   textWorksheetController
-                              //     //     // }
-                              //     //     // print(text);
-                              //     //     // enterCounter++;
-
-                              //     //     // if (enterCounter > 15) {
-                              //     //     //   textWorksheetController.text = textWorksheetController
-                              //     //     //       .text
-                              //     //     //       .replaceAll('\n', '');
-                              //     //     //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     //     //     const SnackBar(
-                              //     //     //       content: Text("Reached max lines"),
-                              //     //     //     ),
-                              //     //     //   );
-                              //     //     //   MaxLengthEnforcement.enforced;
-                              //     //     // }
-                              //     //   }
-                              //   },
-                              //   style: const TextStyle(
-                              //     // wordSpacing: 50,
-                              //     height: 4,
-                              //     fontSize: 20,
-                              //     fontWeight: FontWeight.bold,
-                              //   ),
-                              //   decoration: InputDecoration(
-                              //     contentPadding: const EdgeInsets.symmetric(
-                              //       horizontal: 5.0,
-                              //     ),
-                              //     hintText: intl.Bidi.detectRtlDirectionality(
-                              //             _textWorksheetController.text)
-                              //         ? "شروع ..."
-                              //         : " Start ...",
-                              //     hintStyle: const TextStyle(
-                              //       fontSize: 20.0,
-                              //       fontWeight: FontWeight.bold,
-                              //     ),
-                              //     hintTextDirection: getDirection(
-                              //         _textWorksheetController.text),
-                              //   ),
-                              //   scrollPadding: const EdgeInsets.all(20.0),
-                              //   keyboardType: TextInputType.multiline,
-                              //   maxLines: maxLinesInTextField,
-                              //   cursorHeight: 120,
-                              //   maxLength: maxLengthInTextField,
-                              //   maxLengthEnforcement:
-                              //       MaxLengthEnforcement.enforced,
-                              //   // cursorWidth: 5,
-                              // );
-                              return Container();
-                              // return HtmlEditor(
-                              //   controller: _controller,
-                              //   htmlEditorOptions: const HtmlEditorOptions(
-                              //     hint: 'Your text here...',
-                              //     shouldEnsureVisible: true,
-                              //     //initialText: "<p>text content initial, if any</p>",
-                              //   ),
-                              //   htmlToolbarOptions: const HtmlToolbarOptions(
-                              //     separatorWidget: VerticalDivider(
-                              //       indent: 0,
-                              //       endIndent: 0,
-                              //     ),
-                              //     defaultToolbarButtons: [],
-                              //     toolbarPosition: ToolbarPosition
-                              //         .custom, //required to place toolbar anywhere!
-                              //   ),
-                              //   otherOptions: OtherOptions(height: height),
-                              // );
-
-                              // return Container(
-                              //   height: 800,
-                              // child: RichMultiLine(
-                              //   text: 'این یک متن ساده است. ',
-                              //   spans: [
-                              //     TextSpan(
-                              //       text: 'تپ کنید اینجا',
-                              //       style: TextStyle(color: Colors.blue),
-                              //       recognizer: TapGestureRecognizer()
-                              //         ..onTap = () {
-                              //           showDialog(
-                              //             context: context,
-                              //             builder: (context) => AlertDialog(
-                              //               content: Text('لینک تپ شد.'),
-                              //             ),
-                              //           );
-                              //         },
-                              //     ),
-                              //     TextSpan(
-                              //       text: ' برای دیدن عملکرد.',
-                              //       style: TextStyle(color: Colors.black),
-                              //     ),
-                              //   ],
-                              // ),
-                              // );
-                            },
-                          ),
-                        ],
-                      ),
+                                  controller: _quillController,
+                                  readOnly: false,
+                                  sharedConfigurations:
+                                      const QuillSharedConfigurations(
+                                    dialogBarrierColor: Colors.white,
+                                    dialogTheme: QuillDialogTheme(
+                                      inputTextStyle:
+                                          TextStyle(color: Colors.white),
+                                      dialogBackgroundColor: Colors.white,
+                                      buttonTextStyle:
+                                          TextStyle(color: Colors.white),
+                                      labelTextStyle:
+                                          TextStyle(color: Colors.white),
+                                    ),
+                                    locale: Locale('fa', 'IR'),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
+
                   ShapesWorksheetWidget(
                     // textWorksheetController: textWorksheetController,
                     scrollController: _scrollControllerScreen,
