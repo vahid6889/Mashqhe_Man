@@ -39,7 +39,7 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
     document: Document(),
     selection: const TextSelection.collapsed(offset: 0),
   );
-  ScrollController? _scrollControllerToolbar;
+  final ScrollController _scrollControllerToolbar = ScrollController();
   FocusNode textFieldFocusNode = FocusNode();
   // Map<String, Offset> positionsCircle = {};
   // String idPositionsCircle = const Uuid().v4();
@@ -109,7 +109,7 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
   void dispose() {
     _textWorksheetController.dispose();
     _scrollControllerScreen.dispose();
-    _scrollControllerToolbar!.dispose();
+    _scrollControllerToolbar.dispose();
     super.dispose();
   }
 
@@ -117,7 +117,7 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
   void deactivate() {
     /// save temp document when user left the page
     List<int> listTextWorksheetController =
-        utf8.encode(_textWorksheetController.text);
+        utf8.encode(_quillController.document.toPlainText());
     Uint8List uint8ListTextWorksheetController =
         Uint8List.fromList(listTextWorksheetController);
 
@@ -227,61 +227,102 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
 
                               final WorksheetEntity? _worksheeTempEntity =
                                   _getWorksheetByIdCompleted.worksheetEntity;
-
-                              _textWorksheetController.text =
-                                  utf8.decode(_worksheeTempEntity!.content!);
-
-                              return TextField(
-                                focusNode: textFieldFocusNode,
-                                controller: _textWorksheetController,
-                                textDirection:
-                                    getDirection(_textWorksheetController.text),
-                                textAlign: intl.Bidi.detectRtlDirectionality(
-                                        _textWorksheetController.text)
-                                    ? TextAlign.right
-                                    : TextAlign.left,
-                                textInputAction: TextInputAction.newline,
-                                onChanged: (text) {
-                                  if (text.contains('\n') &&
-                                      text.codeUnits.isNotEmpty &&
-                                      text.codeUnits.last == 10) {
-                                    numLines = '\n'.allMatches(text).length;
-
-                                    if (numLines > 14) {
-                                      textFieldFocusNode.unfocus();
-                                      // text.trim();
-                                    }
-                                  }
-                                },
-                                style: const TextStyle(
-                                  wordSpacing: 20,
-                                  height: 4,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  hintText: intl.Bidi.detectRtlDirectionality(
-                                          _textWorksheetController.text)
-                                      ? "شروع ..."
-                                      : " Start ...",
-                                  hintStyle: const TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  hintTextDirection: getDirection(
-                                      _textWorksheetController.text),
-                                ),
-                                scrollPadding: const EdgeInsets.all(20.0),
-                                keyboardType: TextInputType.multiline,
-                                maxLines: maxLinesInTextField,
-                                cursorHeight: 120,
-                                maxLength: maxLengthInTextField,
-                                maxLengthEnforcement:
-                                    MaxLengthEnforcement.enforced,
-                                // cursorWidth: 5,
+                              _quillController.document.insert(
+                                0,
+                                utf8.decode(_worksheeTempEntity!.content!),
                               );
+
+                              return QuillEditor.basic(
+                                configurations: QuillEditorConfigurations(
+                                  scrollable: true,
+                                  // scrollBottomInset: 1.0,
+                                  scrollPhysics: const BouncingScrollPhysics(),
+                                  maxHeight: height * 1.5,
+                                  minHeight: height * 1.5,
+                                  showCursor: true,
+                                  dialogTheme: const QuillDialogTheme(
+                                    inputTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    dialogBackgroundColor: Colors.white,
+                                    buttonTextStyle:
+                                        TextStyle(color: Colors.white),
+                                    labelTextStyle:
+                                        TextStyle(color: Colors.white),
+                                  ),
+                                  controller: _quillController,
+                                  readOnly: false,
+                                  padding: const EdgeInsets.only(
+                                    top: 25.0,
+                                    right: 8.0,
+                                    left: 8.0,
+                                  ),
+                                  sharedConfigurations:
+                                      const QuillSharedConfigurations(
+                                    dialogBarrierColor: Colors.white,
+                                    dialogTheme: QuillDialogTheme(
+                                      inputTextStyle:
+                                          TextStyle(color: Colors.white),
+                                      dialogBackgroundColor: Colors.white,
+                                      buttonTextStyle:
+                                          TextStyle(color: Colors.white),
+                                      labelTextStyle:
+                                          TextStyle(color: Colors.white),
+                                    ),
+                                    locale: Locale('fa', 'IR'),
+                                  ),
+                                ),
+                              );
+                              // return TextField(
+                              //   focusNode: textFieldFocusNode,
+                              //   controller: _textWorksheetController,
+                              //   textDirection:
+                              //       getDirection(_textWorksheetController.text),
+                              //   textAlign: intl.Bidi.detectRtlDirectionality(
+                              //           _textWorksheetController.text)
+                              //       ? TextAlign.right
+                              //       : TextAlign.left,
+                              //   textInputAction: TextInputAction.newline,
+                              //   onChanged: (text) {
+                              //     if (text.contains('\n') &&
+                              //         text.codeUnits.isNotEmpty &&
+                              //         text.codeUnits.last == 10) {
+                              //       numLines = '\n'.allMatches(text).length;
+
+                              //       if (numLines > 14) {
+                              //         textFieldFocusNode.unfocus();
+                              //         // text.trim();
+                              //       }
+                              //     }
+                              //   },
+                              //   style: const TextStyle(
+                              //     wordSpacing: 20,
+                              //     height: 4,
+                              //     fontSize: 20,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              //   decoration: InputDecoration(
+                              //     contentPadding: const EdgeInsets.symmetric(
+                              //         horizontal: 5.0),
+                              //     hintText: intl.Bidi.detectRtlDirectionality(
+                              //             _textWorksheetController.text)
+                              //         ? "شروع ..."
+                              //         : " Start ...",
+                              //     hintStyle: const TextStyle(
+                              //       fontSize: 20.0,
+                              //       fontWeight: FontWeight.bold,
+                              //     ),
+                              //     hintTextDirection: getDirection(
+                              //         _textWorksheetController.text),
+                              //   ),
+                              //   scrollPadding: const EdgeInsets.all(20.0),
+                              //   keyboardType: TextInputType.multiline,
+                              //   maxLines: maxLinesInTextField,
+                              //   cursorHeight: 120,
+                              //   maxLength: maxLengthInTextField,
+                              //   maxLengthEnforcement:
+                              //       MaxLengthEnforcement.enforced,
+                              //   // cursorWidth: 5,
+                              // );
                             }
 
                             // return TextField(
@@ -368,21 +409,34 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
                             //       MaxLengthEnforcement.enforced,
                             //   // cursorWidth: 5,
                             // );
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                top: 8.0,
-                                right: 8.0,
-                                left: 8.0,
-                              ),
-                              child: QuillEditor.basic(
-                                configurations: QuillEditorConfigurations(
-                                  scrollable: true,
-                                  // scrollBottomInset: 1.0,
-                                  scrollPhysics: const BouncingScrollPhysics(),
-                                  maxHeight: height * 1.5,
-                                  minHeight: height * 1.5,
-                                  showCursor: true,
-                                  dialogTheme: const QuillDialogTheme(
+                            return QuillEditor.basic(
+                              configurations: QuillEditorConfigurations(
+                                scrollable: true,
+                                // scrollBottomInset: 1.0,
+                                scrollPhysics: const BouncingScrollPhysics(),
+                                maxHeight: height * 1.5,
+                                minHeight: height * 1.5,
+                                showCursor: true,
+                                dialogTheme: const QuillDialogTheme(
+                                  inputTextStyle:
+                                      TextStyle(color: Colors.white),
+                                  dialogBackgroundColor: Colors.white,
+                                  buttonTextStyle:
+                                      TextStyle(color: Colors.white),
+                                  labelTextStyle:
+                                      TextStyle(color: Colors.white),
+                                ),
+                                controller: _quillController,
+                                readOnly: false,
+                                padding: const EdgeInsets.only(
+                                  top: 25.0,
+                                  right: 8.0,
+                                  left: 8.0,
+                                ),
+                                sharedConfigurations:
+                                    const QuillSharedConfigurations(
+                                  dialogBarrierColor: Colors.white,
+                                  dialogTheme: QuillDialogTheme(
                                     inputTextStyle:
                                         TextStyle(color: Colors.white),
                                     dialogBackgroundColor: Colors.white,
@@ -391,22 +445,7 @@ class _BottomToolBoxState extends State<DocumentWorksheetPage> {
                                     labelTextStyle:
                                         TextStyle(color: Colors.white),
                                   ),
-                                  controller: _quillController,
-                                  readOnly: false,
-                                  sharedConfigurations:
-                                      const QuillSharedConfigurations(
-                                    dialogBarrierColor: Colors.white,
-                                    dialogTheme: QuillDialogTheme(
-                                      inputTextStyle:
-                                          TextStyle(color: Colors.white),
-                                      dialogBackgroundColor: Colors.white,
-                                      buttonTextStyle:
-                                          TextStyle(color: Colors.white),
-                                      labelTextStyle:
-                                          TextStyle(color: Colors.white),
-                                    ),
-                                    locale: Locale('fa', 'IR'),
-                                  ),
+                                  locale: Locale('fa', 'IR'),
                                 ),
                               ),
                             );

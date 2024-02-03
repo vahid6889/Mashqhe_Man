@@ -2,10 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mashgh/core/presentation/widgets/modal_floating_action_button_widget.dart';
 import 'package:mashgh/core/utils/storage_operator.dart';
 import 'package:mashgh/features/feature_document_worksheet/domain/use_cases/factories/document_worksheet_factory.dart';
 import 'package:mashgh/features/feature_image_worksheet/presentation/screens/image_worksheet_page.dart';
+import 'package:mashgh/features/feature_workspace_managment/presentation/bloc/cubits/animate_add_new_category/animate_add_new_category_cubit.dart';
 import 'package:mashgh/features/feature_workspace_managment/presentation/screens/workspace_managment_page.dart';
 import 'package:mashgh/locator.dart';
 
@@ -23,13 +25,22 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   final PageController _pageController = PageController(
-    initialPage: WorksheetManagmentPage.page,
+    initialPage: WorkspaceManagmentPage.page,
   );
 
   List<Widget> levelScreens = [
     // const SizedBox.shrink(),
-    const WorksheetManagmentPage(),
+
+    /// workspace managment page
+    BlocProvider(
+      create: (BuildContext context) => AnimateAddNewCategoryButtonCubit(),
+      child: const WorkspaceManagmentPage(),
+    ),
+
+    /// image worksheet page
     const ImageWorksheetPage(),
+
+    /// document worksheet page
     const DocumentWorksheetFactory(),
   ];
 

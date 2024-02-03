@@ -32,6 +32,7 @@ import 'package:mashgh/features/feature_workspace_managment/presentation/bloc/wo
 import 'package:mashgh/features/feature_workspace_managment/presentation/bloc/workspace/worksheets_bloc/delete_worksheet_status.dart';
 import 'package:mashgh/features/feature_workspace_managment/presentation/bloc/workspace/worksheets_bloc/get_all_worksheet_status.dart';
 import 'package:mashgh/features/feature_workspace_managment/presentation/bloc/workspace/worksheets_bloc/workspace_worksheet_bloc.dart';
+import 'package:mashgh/features/feature_workspace_managment/presentation/screens/see_all_explore_category_page.dart';
 import 'package:mashgh/features/feature_workspace_managment/presentation/utils/constants.dart';
 import 'package:mashgh/locator.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -39,16 +40,16 @@ import 'dart:math' as math;
 
 StorageOperator storageOperator = locator();
 
-class WorksheetManagmentPage extends StatefulWidget {
-  static const routeName = "/worksheet_managment";
+class WorkspaceManagmentPage extends StatefulWidget {
+  static const routeName = "/workspace_managment";
   static int page = 0;
-  const WorksheetManagmentPage({super.key});
+  const WorkspaceManagmentPage({super.key});
 
   @override
-  State<WorksheetManagmentPage> createState() => _WorksheetManagmentPageState();
+  State<WorkspaceManagmentPage> createState() => _WorkspaceManagmentPageState();
 }
 
-class _WorksheetManagmentPageState extends State<WorksheetManagmentPage> {
+class _WorkspaceManagmentPageState extends State<WorkspaceManagmentPage> {
   ScrollController? scrollController;
   final TextEditingController _textEditingController = TextEditingController();
 
@@ -1197,7 +1198,7 @@ class TaskGroupContainer extends StatelessWidget {
   final String taskGroup;
   final String taskCount;
   const TaskGroupContainer({
-    Key? key,
+    super.key,
     required this.categoryTitle,
     required this.categoryId,
     required this.color,
@@ -1205,133 +1206,144 @@ class TaskGroupContainer extends StatelessWidget {
     required this.icon,
     required this.taskGroup,
     required this.taskCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     int categoryIdContainer = 0;
 
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: color[400],
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.4),
-            blurRadius: 10,
-            spreadRadius: 4,
-            offset: const Offset(2, 6),
-          )
-        ],
-        // gradient: AppColors.getDarkLinearGradient(color),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // const SizedBox(
-          //   height: 5,
-          // ),
-          Align(
-            alignment: isSmall! ? Alignment.centerLeft : Alignment.center,
-            child: Icon(
-              icon,
-              size: isSmall! ? 60 : 120,
-              color: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          SeeAllExploreCategoryPage.routeName,
+          arguments: {
+            'categoryColor': color,
+          },
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: color[400],
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.4),
+              blurRadius: 10,
+              spreadRadius: 4,
+              offset: const Offset(2, 6),
+            )
+          ],
+          // gradient: AppColors.getDarkLinearGradient(color),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // const SizedBox(
+            //   height: 5,
+            // ),
+            Align(
+              alignment: isSmall! ? Alignment.centerLeft : Alignment.center,
+              child: Icon(
+                icon,
+                size: isSmall! ? 60 : 120,
+                color: Colors.white,
+              ),
             ),
-          ),
-          const Spacer(),
-          Text(
-            taskGroup,
-            maxLines: 2,
-            overflow: TextOverflow.fade,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: AppSize.s18,
-              fontWeight: FontWeight.bold,
+            const Spacer(),
+            Text(
+              taskGroup,
+              maxLines: 2,
+              overflow: TextOverflow.fade,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: AppSize.s18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          // const SizedBox(
-          //   height: 5,
-          // ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "$taskCount کاربرگ",
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
+            // const SizedBox(
+            //   height: 5,
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "$taskCount کاربرگ",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-              BlocConsumer<CategoryBloc, CategoryState>(
-                listenWhen: (previous, current) {
-                  if (current.deleteCategoryStatus ==
-                          previous.deleteCategoryStatus ||
-                      categoryIdContainer != categoryId) {
-                    return false;
-                  }
-                  return true;
-                },
-                buildWhen: (previous, current) {
-                  if (current.deleteCategoryStatus ==
-                          previous.deleteCategoryStatus ||
-                      categoryIdContainer != categoryId) {
-                    return false;
-                  }
-                  return true;
-                },
-                listener: (context, stateListenerDelete) {
-                  if (stateListenerDelete.deleteCategoryStatus
-                      is DeleteCategoryError) {}
-                },
-                builder: (context, stateBuilderDelete) {
-                  if (stateBuilderDelete.deleteCategoryStatus
-                      is DeleteCategoryLoading) {
-                    return const CircularProgressIndicator.adaptive(
-                      strokeWidth: 5,
-                    );
-                  }
-                  if (stateBuilderDelete.deleteCategoryStatus
-                      is DeleteCategoryCompleted) {
-                    categoryIdContainer = 0;
-                    BlocProvider.of<CategoryBloc>(context).add(
-                      GetAllCategoryEvent(),
-                    );
-                    NoParams noParams = NoParams();
-                    BlocProvider.of<CategoryBloc>(context).add(
-                      DeleteCategoryInitialEvent(noParams),
-                    );
-                  }
-
-                  return ItemRemoverComponent(
-                    categoryTitle: 'پوشه $categoryTitle',
-                    onPressed: () {
-                      CategoryParams categoryParams = CategoryParams(
-                        id: categoryId,
+                BlocConsumer<CategoryBloc, CategoryState>(
+                  listenWhen: (previous, current) {
+                    if (current.deleteCategoryStatus ==
+                            previous.deleteCategoryStatus ||
+                        categoryIdContainer != categoryId) {
+                      return false;
+                    }
+                    return true;
+                  },
+                  buildWhen: (previous, current) {
+                    if (current.deleteCategoryStatus ==
+                            previous.deleteCategoryStatus ||
+                        categoryIdContainer != categoryId) {
+                      return false;
+                    }
+                    return true;
+                  },
+                  listener: (context, stateListenerDelete) {
+                    if (stateListenerDelete.deleteCategoryStatus
+                        is DeleteCategoryError) {}
+                  },
+                  builder: (context, stateBuilderDelete) {
+                    if (stateBuilderDelete.deleteCategoryStatus
+                        is DeleteCategoryLoading) {
+                      return const CircularProgressIndicator.adaptive(
+                        strokeWidth: 5,
                       );
-
+                    }
+                    if (stateBuilderDelete.deleteCategoryStatus
+                        is DeleteCategoryCompleted) {
+                      categoryIdContainer = 0;
                       BlocProvider.of<CategoryBloc>(context).add(
-                        DeleteCategoryEvent(categoryParams),
+                        GetAllCategoryEvent(),
                       );
-                      BlocProvider.of<CategoryBloc>(context)
-                          .categoryList
-                          .remove(categoryId);
-                      categoryIdContainer = categoryId;
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icons.delete,
-                    colorIcon: ColorManager.white,
-                  );
-                },
-              ),
-            ],
-          ),
-          // const SizedBox(
-          //   height: 5,
-          // ),
-        ],
+                      NoParams noParams = NoParams();
+                      BlocProvider.of<CategoryBloc>(context).add(
+                        DeleteCategoryInitialEvent(noParams),
+                      );
+                    }
+
+                    return ItemRemoverComponent(
+                      categoryTitle: 'پوشه $categoryTitle',
+                      onPressed: () {
+                        CategoryParams categoryParams = CategoryParams(
+                          id: categoryId,
+                        );
+
+                        BlocProvider.of<CategoryBloc>(context).add(
+                          DeleteCategoryEvent(categoryParams),
+                        );
+                        BlocProvider.of<CategoryBloc>(context)
+                            .categoryList
+                            .remove(categoryId);
+                        categoryIdContainer = categoryId;
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icons.delete,
+                      colorIcon: ColorManager.white,
+                    );
+                  },
+                ),
+              ],
+            ),
+            // const SizedBox(
+            //   height: 5,
+            // ),
+          ],
+        ),
       ),
     );
   }

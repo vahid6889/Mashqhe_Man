@@ -24,7 +24,7 @@ class ModalFloatingActionButtonWidget extends StatelessWidget {
       TextButton.icon(
         onPressed: () {
           pageController.animateToPage(
-            WorksheetManagmentPage.page,
+            WorkspaceManagmentPage.page,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
