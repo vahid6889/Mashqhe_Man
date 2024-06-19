@@ -17,7 +17,7 @@ const levelScreenStorageKey = 'level_screen';
 class MainWrapper extends StatefulWidget {
   static const routeName = "/main_wrapper";
 
-  const MainWrapper({Key? key}) : super(key: key);
+  const MainWrapper({super.key});
 
   @override
   State<MainWrapper> createState() => _MainWrapperState();
@@ -202,27 +202,27 @@ class _MainWrapperState extends State<MainWrapper> {
     );
   }
 
-  Future<void> checkLoged() async {
-    const sessionKey = 'rise_up_session';
-    // storageOperator.destroyKey(sessionKey);
-    final riseUpSession = storageOperator.pull(sessionKey);
+  // Future<void> checkLoged() async {
+  //   const sessionKey = 'rise_up_session';
+  //   // storageOperator.destroyKey(sessionKey);
+  //   final riseUpSession = storageOperator.pull(sessionKey);
 
-    riseUpSession.then(
-      (session) async {
-        if (session.isEmpty) {
-          // Navigator.pushNamedAndRemoveUntil(
-          //   context,
-          //   LoginPage.routeName,
-          //   (route) => false,
-          // );
-        } else {
-          // Navigator.pushNamedAndRemoveUntil(
-          //   context,
-          //   HomePage.routeName,
-          //   (route) => false,
-          // );
-        }
-      },
-    );
-  }
+  //   riseUpSession.then(
+  //     (session) async {
+  //       if (session.isEmpty) {
+  //         // Navigator.pushNamedAndRemoveUntil(
+  //         //   context,
+  //         //   LoginPage.routeName,
+  //         //   (route) => false,
+  //         // );
+  //       } else {
+  //         // Navigator.pushNamedAndRemoveUntil(
+  //         //   context,
+  //         //   HomePage.routeName,
+  //         //   (route) => false,
+  //         // );
+  //       }
+  //     },
+  //   );
+  // }
 }

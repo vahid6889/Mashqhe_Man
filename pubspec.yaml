@@ -53,6 +53,10 @@ dependencies:
   flutter_quill: ^9.2.2
   gap: ^3.0.1
   sizer: ^2.0.15
+  dio: ^5.4.2+1
+  pinput: ^4.0.0
+  toastification: ^2.0.0
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -81,7 +85,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/lottie/Identity_pencil.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

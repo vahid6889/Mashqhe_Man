@@ -1,9 +1,15 @@
-// import 'package:appwrite/appwrite.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mashgh/core/data/db/local/database.dart';
 // import 'package:mashgh/core/utils/constants.dart';
 import 'package:mashgh/core/utils/storage_operator.dart';
+import 'package:mashgh/features/feature_auth/data/data_source/remote/api_provider_auth.dart';
+import 'package:mashgh/features/feature_auth/data/repository/user_repositoryImpl.dart';
+import 'package:mashgh/features/feature_auth/domain/repository/user_repository.dart';
+import 'package:mashgh/features/feature_auth/domain/use_cases/call_generate_otp_usecase.dart';
+import 'package:mashgh/features/feature_auth/domain/use_cases/call_login_otp_usecase.dart';
+import 'package:mashgh/features/feature_auth/domain/use_cases/call_update_user_profile_usecase.dart';
+import 'package:mashgh/features/feature_auth/presentation/bloc/authentication/auth_bloc.dart';
 import 'package:mashgh/features/feature_document_worksheet/data/repository/document_worksheet_repositoryimpl.dart';
 import 'package:mashgh/features/feature_document_worksheet/domain/repository/document_worksheet_repository.dart';
 import 'package:mashgh/features/feature_document_worksheet/domain/use_cases/worksheet/delete_all_temp_shape_usecase.dart';
@@ -32,9 +38,7 @@ GetIt locator = GetIt.instance;
 // Client client = Client();
 
 setup() async {
-  // locator.registerSingleton<ApiProviderAuth>(ApiProviderAuth());
-  // locator.registerSingleton<ApiProviderAddTodo>(ApiProviderAddTodo());
-  // locator.registerSingleton<ApiProviderHome>(ApiProviderHome());
+  locator.registerSingleton<ApiProviderAuth>(ApiProviderAuth());
 
   /// databases
   final database =
@@ -44,14 +48,8 @@ setup() async {
   locator.registerSingleton<FlutterSecureStorage>(flutterSecureStorage);
   locator.registerSingleton<StorageOperator>(StorageOperator());
 
-  // client
-  //     .setEndpoint(Constants.baseUrl)
-  //     .setProject('64d0ef46122980a6fcfb')
-  //     // .setProject('TodoFlutter')
-  //     .setSelfSigned(status: true);
-  // locator.registerSingleton<Client>(client);
-
   /// repositories
+  locator.registerSingleton<UserRepository>(UserRepositoryImpl(locator()));
   locator.registerSingleton<DocumentWorksheetRepository>(
       DocumentWorksheetRepositoryImpl(
     database.shapesDao,
@@ -91,8 +89,19 @@ setup() async {
       ShapesSaveTriggerUsecase(locator()));
   locator.registerSingleton<DeleteShapeByWorksheetUniqueIdUsecase>(
       DeleteShapeByWorksheetUniqueIdUsecase(locator()));
+  locator.registerSingleton<CallGenerateOtpUseCase>(
+      CallGenerateOtpUseCase(locator()));
+  locator
+      .registerSingleton<CallLoginOtpUseCase>(CallLoginOtpUseCase(locator()));
+  locator.registerSingleton<CallUpdateUserProfileUseCase>(
+      CallUpdateUserProfileUseCase(locator()));
 
   /// bloc features
+  locator.registerSingleton(AuthBloc(
+    locator(),
+    locator(),
+    locator(),
+  ));
   locator.registerSingleton(
     CircleBloc(
       locator(),

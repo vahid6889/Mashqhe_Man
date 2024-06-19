@@ -1,42 +1,46 @@
-// import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 
-// class AppException implements Exception {
-//   final String? message;
-//   Response? response;
+class AppException implements Exception {
+  final String? message;
+  Response? response;
 
-//   AppException({required this.message, this.response});
+  AppException({required this.message, this.response});
 
-//   String getMessage() {
-//     return "$message";
-//   }
-// }
+  String getMessage() {
+    return "$message";
+  }
 
-// class ServerException extends AppException {
-//   ServerException({String? message})
-//       : super(message: message ?? "مشکلی پیش آمده لطفا دوباره امتحان کنید.");
-// }
+  String getResponse() {
+    return "$response";
+  }
+}
 
-// class NotFoundException extends AppException {
-//   NotFoundException({String? message})
-//       : super(message: message ?? "صفحه مورد نظر یافت نشد.");
-// }
+class ServerException extends AppException {
+  ServerException({String? message, Response? response})
+      : super(message: message ?? "مشکلی پیش آمده لطفا دوباره امتحان کنید");
+}
 
-// class DataParsingException extends AppException {
-//   DataParsingException({String? message})
-//       : super(message: message ?? "Data has Corrupted");
-// }
+class NotFoundException extends AppException {
+  NotFoundException({String? message})
+      : super(message: message ?? "صفحه مورد نظر یافت نشد.");
+}
 
-// class BadRequestException extends AppException {
-//   BadRequestException({String? message, Response? response})
-//       : super(message: message ?? "bad request exception.", response: response);
-// }
+class DataParsingException extends AppException {
+  DataParsingException({String? message})
+      : super(message: message ?? "داده ها خراب شده است");
+}
 
-// class FetchDataException extends AppException {
-//   FetchDataException({String? message})
-//       : super(message: message ?? "please check your connection...");
-// }
+class BadRequestException extends AppException {
+  BadRequestException({String? message, super.response})
+      : super(message: message ?? "داده ها خراب شده است");
+}
 
-// class UnauthorisedException extends AppException {
-//   UnauthorisedException({String? message})
-//       : super(message: message ?? "token has been expired.");
-// }
+class FetchDataException extends AppException {
+  FetchDataException({String? message})
+      : super(message: message ?? "لطفا اتصال خود را بررسی کنید");
+}
+
+class UnauthorisedException extends AppException {
+  UnauthorisedException({String? message})
+      : super(message: message ?? "توکن منقضی شده است");
+}

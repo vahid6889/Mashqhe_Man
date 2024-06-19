@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mashgh/core/blocs/cubits/toolbar_component_cubit.dart';
+import 'package:mashgh/core/blocs/form_bloc/form_bloc.dart';
 import 'package:mashgh/core/config/my_theme.dart';
 import 'package:mashgh/core/presentation/ui/main_wrapper.dart';
+import 'package:mashgh/core/utils/storage_operator.dart';
+import 'package:mashgh/features/feature_auth/presentation/bloc/authentication/auth_bloc.dart';
+import 'package:mashgh/features/feature_auth/presentation/cubits/count_down_time_otp_cubit.dart';
+import 'package:mashgh/features/feature_auth/presentation/cubits/input_chip_cubit.dart';
+import 'package:mashgh/features/feature_auth/presentation/screens/identity_form_page.dart';
+import 'package:mashgh/features/feature_auth/presentation/screens/login_otp_page.dart';
+import 'package:mashgh/features/feature_auth/presentation/screens/verification_otp_page.dart';
 import 'package:mashgh/features/feature_document_worksheet/domain/use_cases/factories/document_worksheet_factory.dart';
 import 'package:mashgh/features/feature_document_worksheet/presentation/bloc/toolbar/shapes/circle/circle_bloc.dart';
 import 'package:mashgh/features/feature_document_worksheet/presentation/bloc/worksheet/document/document_bloc.dart';
@@ -31,8 +39,9 @@ void main() async {
     MultiBlocProvider(
       providers: [
         /// blocs
-        // BlocProvider(
-        //     create: (_) => UserProfileBloc()..add(UserProfileInitialEvent())),
+        BlocProvider(create: (_) => FormBloc()..add(ObscureTextInitialEvent())),
+        BlocProvider(create: (_) => locator<AuthBloc>()),
+
         BlocProvider(create: (_) => locator<WorkspaceWorksheetBloc>()),
         BlocProvider(create: (_) => locator<CategoryBloc>()),
         BlocProvider(create: (_) => locator<CircleBloc>()),
@@ -42,11 +51,15 @@ void main() async {
         BlocProvider(create: (_) => ToolbarComponentCubit()),
         BlocProvider(create: (_) => ChangeCategoryIconCubit()),
         BlocProvider(create: (_) => ChangeCategoryColorCubit()),
+        BlocProvider(create: (_) => ResendTimeOtpCubit()),
+        BlocProvider(create: (_) => InputChipCubit()),
       ],
       child: const MyApp(),
     ),
   );
 }
+
+StorageOperator storageOperator = locator();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -59,24 +72,28 @@ class MyApp extends StatelessWidget {
           theme: MyThemes.lightTheme,
           debugShowCheckedModeBanner: false,
           title: "Mashqh",
-          home: const MainWrapper(),
-          // home: FutureBuilder<bool>(
-          //   future: prefsOperator.getLoggedIn("LoggedIn"),
-          //   builder: (context, AsyncSnapshot<bool> snapshot) {
-          //     if (snapshot.hasData) {
-          //       return Directionality(
-          //         textDirection: TextDirection.ltr,
-          //         child: snapshot.data == true
-          //             ? MainWrapper()
-          //             : const SignUpScreen(),
-          //       );
-          //     } else {
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //   },
-          // ),
+          home: FutureBuilder<dynamic>(
+            future: storageOperator
+                .pull("riseUpAuthentication")
+                .then((value) => value),
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasData) {
+                return snapshot.data == 'true'
+                    ? const IdentityFormPage()
+                    : const LoginOtpPage();
+                // return Directionality(
+                //   textDirection: TextDirection.ltr,
+                //   child: snapshot.data == true
+                //       ? MainWrapper()
+                //       : const SignUpScreen(),
+                // );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
           initialRoute: "/",
           routes: {
             MainWrapper.routeName: (context) => const MainWrapper(),
@@ -86,8 +103,10 @@ class MyApp extends StatelessWidget {
                 const ImageWorksheetPage(),
             SeeAllExploreCategoryPage.routeName: (context) =>
                 const SeeAllExploreCategoryPage(),
+            VerificationOtpPage.routeName: (context) =>
+                const VerificationOtpPage(),
+            LoginOtpPage.routeName: (context) => const LoginOtpPage(),
             // HomePage.routeName: (context) => const HomePage(),
-            // AddTodoPage.routeName: (context) => const AddTodoPage(),
           },
         );
       },

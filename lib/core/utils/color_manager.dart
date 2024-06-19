@@ -28,6 +28,7 @@ class ColorManager {
   static Color darkGreyThree = HexColor.fromHex('#7B7B7B');
   static Color darkRed = HexColor.fromHex('#F12A00');
   static Color darkYellow = HexColor.fromHex('#F9BE7C');
+  static Color darkGreen = HexColor.fromHex('#32BC32');
   static Color darkBlue = HexColor.fromHex('#0D253F');
   static Color darkOrange = HexColor.fromHex('#f46352');
   static Color darkpurple = HexColor.fromHex('#7178d3');
