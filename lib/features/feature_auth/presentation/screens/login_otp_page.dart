@@ -176,9 +176,9 @@ class LoginOtpPage extends StatelessWidget {
                             generateOtpCompleted.userEntity;
 
                         if (userEntity!.data!.otp!.waitingTime != null) {
-                          storageOperator.push('waiting_time',
+                          storageOperator.push('waiting_time_otp',
                               userEntity.data!.otp!.waitingTime.toString());
-                          storageOperator.push('expire_at',
+                          storageOperator.push('expire_at_otp',
                               userEntity.data!.otp!.expireAt.toString());
                         }
 
@@ -190,7 +190,7 @@ class LoginOtpPage extends StatelessWidget {
                               'tracking_code':
                                   userEntity.data!.otp!.trackingCode,
                               'waiting_time': userEntity.data!.otp!.waitingTime,
-                              'phone_number': mobileController.text,
+                              'phone_number': userEntity.phoneNumber,
                             },
                           ),
                         );

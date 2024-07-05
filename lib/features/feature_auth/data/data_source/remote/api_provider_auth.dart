@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mashgh/core/error_handling/check_exceptions.dart';
 import 'package:mashgh/core/params/login_otp_params.dart';
 import 'package:mashgh/core/params/user_profile_params.dart';
@@ -9,12 +11,12 @@ class ApiProviderAuth {
 
   Future<Response> callGenerateOtpApi(LoginOtpParams loginOtpParams) async {
     try {
-      final fromData = FormData.fromMap({
+      final formData = FormData.fromMap({
         'phone_number': loginOtpParams.mobile,
       });
       final response = await _dio.post(
         '${Constants.baseUrl}/otp/generate',
-        data: fromData,
+        data: formData,
       );
 
       return response;
@@ -25,14 +27,14 @@ class ApiProviderAuth {
 
   Future<Response> callLoginOtpApi(LoginOtpParams loginOtpParams) async {
     try {
-      final fromData = FormData.fromMap({
+      final formData = FormData.fromMap({
         'phone_number': loginOtpParams.mobile,
         'otp': loginOtpParams.otp,
         'tracking_code': loginOtpParams.trackingCode,
       });
       final response = await _dio.post(
         '${Constants.baseUrl}/otp/login-otp',
-        data: fromData,
+        data: formData,
       );
 
       return response;
@@ -44,25 +46,23 @@ class ApiProviderAuth {
   Future<Response> callUpdateUserProfileApi(
       UserProfileParams userProfileParams, String token) async {
     try {
-      final fromData = FormData.fromMap({
+      final formData = FormData.fromMap({
+        'user_name': userProfileParams.userName,
         'name': userProfileParams.name,
         'family': userProfileParams.family,
         'age': userProfileParams.age,
-        'user_name': userProfileParams.userName,
         'role': userProfileParams.role,
+        'phone_number': userProfileParams.mobile,
       });
 
-      final response = await _dio.put(
-        '${Constants.baseUrl}/specification/store-in/${userProfileParams.mobile}',
-        data: fromData,
+      final response = await _dio.post(
+        '${Constants.baseUrl}/specification/write-in',
+        data: formData,
         options: Options(headers: {
-          "Content-Type": "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           'Authorization': 'Bearer $token',
         }),
       );
-
-      print(response.data);
-      print(response.statusCode);
 
       return response;
     } on DioException catch (e) {

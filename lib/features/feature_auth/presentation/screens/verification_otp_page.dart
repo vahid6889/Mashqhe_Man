@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:mashgh/core/params/login_otp_params.dart';
+import 'package:mashgh/core/presentation/ui/main_wrapper.dart';
 import 'package:mashgh/core/presentation/widgets/toastification_mood.dart';
 import 'package:mashgh/core/usecase/use_case.dart';
 import 'package:mashgh/core/utils/color_manager.dart';
@@ -66,8 +67,8 @@ class _VerificationOtpPageState extends State<VerificationOtpPage> {
 
     if (_waitingTime == null) {
       DateTime currentTime = DateTime.now();
-      final expireAt = await storageOperator.pull('expire_at');
-      counterStartTime = await storageOperator.pull('waiting_time');
+      final expireAt = await storageOperator.pull('expire_at_otp');
+      counterStartTime = await storageOperator.pull('waiting_time_otp');
       int currentOpenedTime = currentTime.millisecondsSinceEpoch;
       remainingSeconds = int.parse(expireAt) - currentOpenedTime ~/ 1000;
     }
@@ -201,17 +202,30 @@ class _VerificationOtpPageState extends State<VerificationOtpPage> {
                     ],
                   );
                 } else {
-                  storageOperator.push('riseUpAuthentication', 'true');
-                  storageOperator.push('phone_number', _phoneNumber);
-                  storageOperator.push(
-                      'riseUpAuthUserToken', userEntity.data!.token!);
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (timeStamp) => Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      IdentityFormPage.routeName,
-                      ModalRoute.withName(IdentityFormPage.routeName),
-                    ),
-                  );
+                  if (userEntity.isCompleteProfile == true) {
+                    storageOperator.push('riseUpAuthentication', 'true');
+                    storageOperator.push(
+                        'riseUpAuthUserToken', userEntity.data!.token!);
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (timeStamp) => Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        MainWrapper.routeName,
+                        ModalRoute.withName(MainWrapper.routeName),
+                      ),
+                    );
+                  } else {
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (timeStamp) => Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        IdentityFormPage.routeName,
+                        ModalRoute.withName(IdentityFormPage.routeName),
+                        arguments: <String, dynamic>{
+                          'phone_number': _phoneNumber,
+                          'rise_up_auth_user_token': userEntity.data!.token!,
+                        },
+                      ),
+                    );
+                  }
                 }
               }
 

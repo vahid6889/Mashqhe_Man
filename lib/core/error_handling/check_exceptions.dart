@@ -19,7 +19,12 @@ class CheckExceptions {
       case 500:
         throw ServerException();
       case 422:
-        throw ServerException();
+        throw ServerException(
+          message:
+              response.data['success'] == false && response.statusCode == 422
+                  ? response.data['message']
+                  : null,
+        );
       default:
         throw FetchDataException(
           message: "پاسخی دریافت نشد",

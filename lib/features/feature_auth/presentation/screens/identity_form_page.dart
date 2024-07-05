@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers, unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -26,7 +28,19 @@ class IdentityFormPage extends StatelessWidget {
     TextEditingController firstNameController = TextEditingController();
     TextEditingController lastNameController = TextEditingController();
     TextEditingController ageController = TextEditingController();
+    final userNameFocusNode = FocusNode();
+    final firstNameFocusNode = FocusNode();
+    final lastNameFocusNode = FocusNode();
+    final ageFocusNode = FocusNode();
     final formKey = GlobalKey<FormState>();
+    String? _riseUpAuthUserToken;
+    String? _phoneNumber;
+    Map<String, dynamic>? _args;
+
+    /// get argument from navigator pages
+    _args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    _phoneNumber = _args?['phone_number'];
+    _riseUpAuthUserToken = _args?['rise_up_auth_user_token'];
 
     final Map<String, int> inputChipRolesList = {
       'دانش آموز': 0,
@@ -54,6 +68,9 @@ class IdentityFormPage extends StatelessWidget {
                       const Gap(10),
                       TextFormField(
                         controller: userNameController,
+                        onEditingComplete: () =>
+                            firstNameFocusNode.requestFocus(),
+                        focusNode: userNameFocusNode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'نام کاربری',
@@ -79,6 +96,9 @@ class IdentityFormPage extends StatelessWidget {
                       const Gap(20),
                       TextFormField(
                         controller: firstNameController,
+                        onEditingComplete: () =>
+                            lastNameFocusNode.requestFocus(),
+                        focusNode: firstNameFocusNode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'نام',
@@ -100,6 +120,8 @@ class IdentityFormPage extends StatelessWidget {
                       const Gap(20),
                       TextFormField(
                         controller: lastNameController,
+                        onEditingComplete: () => ageFocusNode.requestFocus(),
+                        focusNode: lastNameFocusNode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'نام خانوادگی',
@@ -123,6 +145,7 @@ class IdentityFormPage extends StatelessWidget {
                       TextFormField(
                         maxLength: 2,
                         controller: ageController,
+                        focusNode: ageFocusNode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'سن',
@@ -199,8 +222,8 @@ class IdentityFormPage extends StatelessWidget {
                         children: [
                           BlocConsumer<AuthBloc, AuthState>(
                             listenWhen: (previous, current) {
-                              if (previous.generateOtpStatus ==
-                                  current.generateOtpStatus) {
+                              if (previous.updateUserProfileStatus ==
+                                  current.updateUserProfileStatus) {
                                 return false;
                               }
                               return true;
@@ -217,14 +240,15 @@ class IdentityFormPage extends StatelessWidget {
                                   context: context,
                                   typeToast: 'error',
                                   titleToast: 'خطا !',
-                                  descriptionToast:
-                                      updateUserProfileError.message,
+                                  descriptionToast: updateUserProfileError
+                                      .message
+                                      .replaceAll("<br/>", ""),
                                 );
                               }
                             },
                             buildWhen: (previous, current) {
-                              if (previous.generateOtpStatus ==
-                                  current.generateOtpStatus) {
+                              if (previous.updateUserProfileStatus ==
+                                  current.updateUserProfileStatus) {
                                 return false;
                               }
                               return true;
@@ -232,19 +256,30 @@ class IdentityFormPage extends StatelessWidget {
                             builder: (context, state) {
                               if (state.updateUserProfileStatus
                                   is UpdateUserProfileLoading) {
-                                return const LinearProgressIndicator();
+                                return SizedBox(
+                                  width: 30.w,
+                                  child: const LinearProgressIndicator(),
+                                );
                               }
                               if (state.updateUserProfileStatus
                                   is UpdateUserProfileCompleted) {
                                 storageOperator.push(
                                     'roleUser', selectedChip.toString());
+                                storageOperator.push(
+                                    'riseUpAuthentication', 'true');
+                                storageOperator.push('riseUpAuthUserToken',
+                                    _riseUpAuthUserToken);
+                                storageOperator.push(
+                                    'phoneNumber', _phoneNumber);
 
                                 WidgetsBinding.instance.addPostFrameCallback(
                                   (timeStamp) =>
                                       Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     MainWrapper.routeName,
-                                    ModalRoute.withName(MainWrapper.routeName),
+                                    ModalRoute.withName(
+                                      MainWrapper.routeName,
+                                    ),
                                   ),
                                 );
                               }
@@ -268,32 +303,21 @@ class IdentityFormPage extends StatelessWidget {
                                       /// create params for api call
                                       final UserProfileParams
                                           userProfileParams = UserProfileParams(
-                                        // mobile:
-                                        //     '${storageOperator.pull('phone_number')}',
-                                        mobile: '09216970278',
+                                        mobile: _phoneNumber,
                                         name: firstNameController.text,
                                         family: lastNameController.text,
                                         age: int.tryParse(ageController.text),
                                         userName: userNameController.text,
                                         role: selectedChip,
                                       );
-
-                                      storageOperator
-                                          .pull('riseUpAuthUserToken')
-                                          .then(
-                                        (tokenAuth) {
-                                          BlocProvider.of<AuthBloc>(context)
-                                              .add(
-                                            UpdateUserProfileEvent(
-                                                userProfileParams, tokenAuth),
-                                          );
-                                        },
+                                      BlocProvider.of<AuthBloc>(context).add(
+                                        UpdateUserProfileEvent(
+                                          userProfileParams,
+                                          _riseUpAuthUserToken,
+                                        ),
                                       );
                                     }
                                   } else {
-                                    storageOperator
-                                        .pull('riseUpAuthUserToken')
-                                        .then((value) => print(value));
                                     ToastificationMood.showToast(
                                       context: context,
                                       typeToast: 'error',

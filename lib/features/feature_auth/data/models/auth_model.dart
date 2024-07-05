@@ -7,6 +7,7 @@ class AuthModel extends UserEntity {
     super.message,
     super.data,
     super.phoneNumber,
+    super.isCompleteProfile,
   });
 
   factory AuthModel.fromJson(dynamic json) {
@@ -24,7 +25,9 @@ class AuthModel extends UserEntity {
       errorCode: errorCode,
       message: json['message'],
       data: data,
-      phoneNumber: json['phone_number'],
+      phoneNumber: json['data'] != null ? json['data']['phone_number'] : null,
+      isCompleteProfile:
+          json['data'] != null ? json['data']['is_complete_profile'] : null,
     );
   }
 }

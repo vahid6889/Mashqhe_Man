@@ -29,7 +29,7 @@ class GenerateOtpInitialEvent extends AuthEvent {
 
 class UpdateUserProfileEvent extends AuthEvent {
   final UserProfileParams userProfileParams;
-  final String token;
+  final String? token;
 
   UpdateUserProfileEvent(this.userProfileParams, this.token);
 }

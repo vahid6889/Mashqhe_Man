@@ -6,7 +6,8 @@ class UserEntity extends Equatable {
   final dynamic errorCode;
   final String? message;
   final Data? data;
-  final int? phoneNumber;
+  final String? phoneNumber;
+  final bool? isCompleteProfile;
 
   const UserEntity({
     this.success,
@@ -14,6 +15,7 @@ class UserEntity extends Equatable {
     this.message,
     this.data,
     this.phoneNumber,
+    this.isCompleteProfile,
   });
 
   @override
@@ -23,5 +25,6 @@ class UserEntity extends Equatable {
         message,
         data,
         phoneNumber,
+        isCompleteProfile,
       ];
 }

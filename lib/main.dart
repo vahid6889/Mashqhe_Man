@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasData) {
                 return snapshot.data == 'true'
-                    ? const IdentityFormPage()
+                    ? const MainWrapper()
                     : const LoginOtpPage();
                 // return Directionality(
                 //   textDirection: TextDirection.ltr,
@@ -106,6 +106,7 @@ class MyApp extends StatelessWidget {
             VerificationOtpPage.routeName: (context) =>
                 const VerificationOtpPage(),
             LoginOtpPage.routeName: (context) => const LoginOtpPage(),
+            IdentityFormPage.routeName: (context) => const IdentityFormPage(),
             // HomePage.routeName: (context) => const HomePage(),
           },
         );

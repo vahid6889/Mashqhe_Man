@@ -2,7 +2,7 @@ class UserProfileParams {
   String? name;
   String? family;
   int? age;
-  String mobile;
+  String? mobile;
   String? userName;
   int? role;
 
