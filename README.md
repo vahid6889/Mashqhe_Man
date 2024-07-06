@@ -5,7 +5,7 @@
 <a href="https://github.com/vahid6889/Crypto-Nas/blob/master/assets/crypto_nas-arm64-v8a.apk">crypto_nas-arm64-v8a.apk</a><br />
 <a href="https://github.com/vahid6889/Crypto-Nas/blob/master/assets/crypto_nas-x86_64.apk">crypto_nas-x86_64.apk</a><br /><br />
 <hr><br />
-How is it weather ?
+Mashqhe man
 <hr>
 
 In this program, you can check the status of your cryptocurrencies graphically and in percentage form, and find out about their winning and losing conditions.
