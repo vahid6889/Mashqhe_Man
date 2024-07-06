@@ -11,7 +11,7 @@ How is it weather ?
 In this program, you can check the status of your cryptocurrencies graphically and in percentage form, and find out about their winning and losing conditions.
 
 <hr>
-/.<p align="center">
+<p align="center">
   <img src="assets/Home_crypto_nas.jpg" width="200" height="400" />
   <img src="assets/Drawing_menu_crypto_nas.jpg" width="200" height="400" />
   <img src="assets/All_crypto_nas.jpg" width="200" height="400" />
@@ -21,7 +21,7 @@ In this program, you can check the status of your cryptocurrencies graphically a
   <img src="assets/Steper2_crypto_nas.jpg" width="200" height="400" />
   <img src="assets/Order_exchange_crypto_nas.jpg" width="200" height="400" />
   <img src="assets/SignUp_crypto_nas.jpg" width="200" height="400" />
-</p>./
+</p>
 <hr>
 
 Features of the cryptocurrencies Flutter project:
