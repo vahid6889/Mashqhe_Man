@@ -1,9 +1,9 @@
 # crypto_nas <img src="android/app/src/main/res/mipmap-hdpi/ic_launcher.png" align="right"/><br><br>
 
 <h2>Download APKs Crypto-Nas</h2>
-<a href="https://github.com/vahid6889/Crypto-Nas/blob/master/assets/crypto_nas-armeabi-v7a.apk">crypto_nas-armeabi-v7a.apk</a><br />
-<a href="https://github.com/vahid6889/Crypto-Nas/blob/master/assets/crypto_nas-arm64-v8a.apk">crypto_nas-arm64-v8a.apk</a><br />
-<a href="https://github.com/vahid6889/Crypto-Nas/blob/master/assets/crypto_nas-x86_64.apk">crypto_nas-x86_64.apk</a><br /><br />
+<a href="">mashqhe_man-armeabi-v7a.apk</a><br />
+<a href="">mashqhe_man-arm64-v8a.apk</a><br />
+<a href="">mashqhe_man-x86_64.apk</a><br /><br />
 <hr><br />
 Mashqhe Man
 <hr>
