@@ -1,6 +1,6 @@
-# crypto_nas <img src="android/app/src/main/res/mipmap-hdpi/ic_launcher.png" align="right"/><br><br>
+# mashqhe_man <img src="android/app/src/main/res/mipmap-hdpi/ic_launcher.png" align="right"/><br><br>
 
-<h2>Download APKs Crypto-Nas</h2>
+<h2>Download APKs Mashqhe-Man</h2>
 <a href="">mashqhe_man-armeabi-v7a.apk</a><br />
 <a href="">mashqhe_man-arm64-v8a.apk</a><br />
 <a href="">mashqhe_man-x86_64.apk</a><br /><br />
